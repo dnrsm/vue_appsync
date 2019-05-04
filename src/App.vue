@@ -69,7 +69,11 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-footer fixed app><span>&copy; 2018</span></v-footer>
+    <v-footer app>
+      <v-flex py-3 text-xs-center xs12>
+        &copy;2019 — <strong>Vue_Appsync_App</strong>
+      </v-flex>
+    </v-footer>
   </v-app>
 </template>
 

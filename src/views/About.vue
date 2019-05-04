@@ -1,5 +1,214 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+  <v-container grid-list-md>
+    <v-layout row wrap>
+      <v-flex xs4 />
+      <v-flex xs4 text-xs-center>
+        <h3>AppSync Tasks</h3>
+        <v-form>
+          <v-text-field v-model="data.image" label="image"></v-text-field>
+          <v-text-field v-model="data.link" label="link"></v-text-field>
+          <v-text-field v-model="data.blank" label="blank"></v-text-field>
+          <v-text-field v-model="data.type" label="type"></v-text-field>
+        </v-form>
+        <v-btn round color="primary" @click="createItems()">タスク追加</v-btn>
+      </v-flex>
+      <v-flex xs4 />
+      <v-flex xs12 sm12>
+        <v-card>
+          <v-card-title>
+            Nutrition
+            <v-spacer></v-spacer>
+            <v-text-field
+              v-model="search"
+              append-icon="search"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-card-title>
+
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ on }">
+              <v-btn color="primary" dark class="mb-2" v-on="on"
+                >New Item</v-btn
+              >
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="headline">{{ formTitle }}</span>
+              </v-card-title>
+
+              <v-card-text>
+                <v-container grid-list-md>
+                  <v-layout wrap>
+                    <v-flex md12>
+                      <v-text-field
+                        v-model="data.image"
+                        label="image"
+                      ></v-text-field>
+                    </v-flex>
+                    <v-flex md12>
+                      <v-text-field
+                        v-model="data.link"
+                        label="link"
+                      ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12 md6>
+                      <v-text-field
+                        v-model="data.blank"
+                        label="blank"
+                      ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12 md6>
+                      <v-text-field
+                        v-model="data.type"
+                        label="type"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" flat @click="close">Cancel</v-btn>
+                <v-btn color="blue darken-1" flat @click="save(data)"
+                  >Save</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-data-table
+            v-model="selected"
+            :headers="headers"
+            :items="tasks"
+            :search="search"
+            select-all
+            class="elevation-1"
+          >
+            <template v-slot:items="props">
+              <td>
+                <v-checkbox
+                  v-model="props.selected"
+                  primary
+                  hide-details
+                ></v-checkbox>
+              </td>
+              <td class="text-xs-right">{{ props.item.id }}</td>
+              <td class="text-xs-right">{{ props.item.image }}</td>
+              <td class="text-xs-right">{{ props.item.link }}</td>
+              <td class="text-xs-right">{{ props.item.blank }}</td>
+              <td class="text-xs-right">{{ props.item.type }}</td>
+              <td class="justify-center layout px-0">
+                <v-icon small class="mr-2" @click="editItem(props.item)">
+                  edit
+                </v-icon>
+                <v-icon small @click="deleteItems(props.item.id)">
+                  delete
+                </v-icon>
+              </td>
+            </template>
+            <template v-slot:no-results>
+              <v-alert :value="true" color="error" icon="warning">
+                Your search for "{{ search }}" found no results.
+              </v-alert>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
+
+<script>
+import itemService from "../services/itemService";
+export default {
+  name: "about",
+  data() {
+    return {
+      dialog: false,
+      search: "",
+      selected: [],
+      headers: [
+        { text: "id", value: "id" },
+        { text: "image", value: "image" },
+        { text: "link", value: "link" },
+        { text: "blank", value: "blank" },
+        { text: "type", value: "type" },
+        { text: "Actions", value: "name", sortable: false }
+      ],
+      data: {
+        image: "",
+        link: "",
+        blank: "",
+        type: ""
+      },
+      tasks: [],
+      editedIndex: -1,
+      editedItem: {
+        name: "",
+        calories: 0,
+        fat: 0,
+        carbs: 0,
+        protein: 0
+      }
+    };
+  },
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    }
+  },
+
+  watch: {
+    dialog(val) {
+      val || this.close();
+    }
+  },
+  methods: {
+    editItem(item) {
+      console.log(item);
+      this.editedIndex = this.tasks.indexOf(item);
+      this.data = Object.assign({}, item);
+      this.dialog = true;
+    },
+    close() {
+      this.dialog = false;
+      setTimeout(() => {
+        this.data = {};
+        this.editedIndex = -1;
+      }, 300);
+    },
+    async save(data) {
+      if (this.editedIndex > -1) {
+        await this.updateItems(data);
+      } else {
+        await this.createItems();
+      }
+      this.close();
+    },
+    async createItems() {
+      await itemService.createItems(JSON.parse(JSON.stringify(this.data)));
+      this.data = "";
+      this.dialog = false;
+      this.tasks = await itemService.getItems();
+      this.close();
+    },
+    async updateItems(data) {
+      await itemService.updateItems(data);
+      this.tasks = await itemService.getItems();
+    },
+    async deleteItems(id) {
+      let confirm_result = confirm("削除しますか？");
+      if (confirm_result) {
+        await itemService.deleteItems(id);
+        this.tasks = await itemService.getItems();
+      }
+    }
+  },
+  async mounted() {
+    this.tasks = await itemService.getItems();
+  }
+};
+</script>
