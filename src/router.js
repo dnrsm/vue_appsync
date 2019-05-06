@@ -17,13 +17,13 @@ getUser().then(user => {
   }
 });
 AmplifyEventBus.$on("authState", async state => {
-  console.log(state);
+  // console.log(state);
   if (state === "signedOut") {
     user = null;
     router.push({ path: "/login" });
   } else if (state === "signedIn") {
     user = await getUser();
-    console.log(user);
+    // console.log(user);
     router.push({ path: "/" });
   }
 });
@@ -74,7 +74,7 @@ const router = new Router({
 router.beforeResolve(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     user = await getUser();
-    console.log(user);
+    // console.log(user);
     if (!user) {
       return next({
         path: "/login",

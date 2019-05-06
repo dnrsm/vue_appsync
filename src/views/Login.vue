@@ -4,26 +4,38 @@
       <v-flex xs4 text-xs-center>
         <amplify-authenticator></amplify-authenticator>
         <div class="login-form">
-          <p>ログイン</p>
-          <p>{{ status }}</p>
-          <p>{{ message_text }}</p>
-          <label>ユーザー名</label>
-          <input type="text" v-model="userInfo.username" />
-          <label>パスワード</label>
-          <input type="password" v-model="userInfo.password" />
-          <button class="btn btn-primary" @click="signIn()">ログイン</button>
-          <button class="btn btn-primary" @click="signOut()">ログアウト</button>
+          <p>status: {{ status }}</p>
+          <p>message_text: {{ message_text }}</p>
+          <v-text-field
+            label="username"
+            type="text"
+            v-model="userInfo.username"
+          ></v-text-field>
+          <v-text-field
+            label="pass"
+            type="password"
+            v-model="userInfo.password"
+          ></v-text-field>
+          <v-btn v-if="status == 'logout'" color="primary" @click="signIn()"
+            >ログイン</v-btn
+          >
+          <v-btn v-if="status == 'login'" color="primary" @click="signOut()"
+            >ログアウト</v-btn
+          >
           <img :src="url" />
         </div>
         <div class="login-form">
-          <p>サインアップ</p>
-          <label>ユーザー名</label>
-          <input type="text" v-model="userInfo.username" />
-          <label>パスワード</label>
-          <input type="password" v-model="userInfo.password" />
-          <button class="btn btn-primary" @click="signUp()">
-            サインアップ
-          </button>
+          <v-text-field
+            label="username"
+            type="text"
+            v-model="userInfo.username"
+          ></v-text-field>
+          <v-text-field
+            label="pass"
+            type="password"
+            v-model="userInfo.password"
+          ></v-text-field>
+          <v-btn color="primary" @click="signUp()">サインアップ</v-btn>
         </div>
       </v-flex>
     </v-layout>
@@ -49,11 +61,13 @@ export default {
   },
   created() {
     Auth.currentSession()
-      .then(() => {
-        this.status = "ログインしています";
+      .then(data => {
+        console.log(data);
+        this.status = "login";
       })
-      .catch(() => {
-        this.status = "ログインしていません";
+      .catch(error => {
+        console.log(error);
+        this.status = "logout";
       });
   },
   methods: {
