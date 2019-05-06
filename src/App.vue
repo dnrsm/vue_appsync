@@ -46,9 +46,7 @@
       </v-btn>
       <v-toolbar-title>The Dashboard</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-title>{{
-        $store.state.user ? $store.state.user : "未ログイン"
-      }}</v-toolbar-title>
+      <v-toolbar-title>{{ user ? user : "未ログイン" }}</v-toolbar-title>
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>account_circle</v-icon>
       </v-btn>
@@ -71,7 +69,6 @@
 
     <v-footer app>
       <v-flex py-3 text-xs-center xs12>
-        {{ userrrr }}
         &copy;2019 — <strong>Vue_Appsync_App</strong>
       </v-flex>
     </v-footer>
@@ -79,11 +76,10 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
-import { SET_USER } from "./store/mutation_types";
+import { mapState } from "vuex";
 
-import { Auth } from "aws-amplify";
-import { AmplifyEventBus } from "aws-amplify-vue";
+// import { Auth } from "aws-amplify";
+// import { AmplifyEventBus } from "aws-amplify-vue";
 
 export default {
   name: "App",
@@ -95,36 +91,37 @@ export default {
     };
   },
   computed: {
-    userrrr() {
-      return this.$store.state.user;
+    user() {
+      return this.$store.state.users.user;
     },
-    ...mapState(["user"])
-  },
-  methods: {
-    ...mapActions([SET_USER])
+    ...mapState(["users/user"])
   },
   async mounted() {
-    await AmplifyEventBus.$on("authState", info => {
-      console.log(
-        `Here is the auth event that was just emitted by an Amplify component: ${info}`
-      );
-    });
-    await Auth.currentUserInfo()
-      .then(data => {
-        console.log(data);
-      })
-      .catch(err => console.log(err));
-    await Auth.currentSession()
-      .then(data => {
-        console.log(data);
-      })
-      .catch(err => console.log(err));
-    await Auth.currentCredentials()
-      .then(data => {
-        console.log(data);
-      })
-      .catch(err => console.log(err));
-    await this.$store.dispatch("setUser", "aaaaa");
+    this.$store.dispatch("users/getUserInfoAction");
+
+    // await AmplifyEventBus.$on("authState", info => {
+    //   console.log(
+    //     `Here is the auth event that was just emitted by an Amplify component: ${info}`
+    //   );
+    // });
+    // await Auth.currentUserInfo()
+    //   .then(data => {
+    //     console.log("currentUserInfo");
+    //     console.log(data);
+    //   })
+    //   .catch(err => console.log(err));
+    // await Auth.currentSession()
+    //   .then(data => {
+    //     console.log("currentSession");
+    //     console.log(data);
+    //   })
+    //   .catch(err => console.log(err));
+    // await Auth.currentCredentials()
+    //   .then(data => {
+    //     console.log("currentCredentials");
+    //     console.log(data);
+    //   })
+    //   .catch(err => console.log(err));
   }
 };
 </script>

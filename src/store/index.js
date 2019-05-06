@@ -5,9 +5,14 @@ import * as getters from "./getters";
 import mutations from "./mutations";
 import state from "./state";
 
+import users from "./modules/users";
+
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
+  modules: {
+    users
+  },
   actions,
   getters,
   state,
