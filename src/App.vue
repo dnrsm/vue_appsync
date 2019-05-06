@@ -71,6 +71,7 @@
 
     <v-footer app>
       <v-flex py-3 text-xs-center xs12>
+        {{ userrrr }}
         &copy;2019 — <strong>Vue_Appsync_App</strong>
       </v-flex>
     </v-footer>
@@ -78,6 +79,12 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+import { SET_USER } from "./store/mutation_types";
+
+import { Auth } from "aws-amplify";
+import { AmplifyEventBus } from "aws-amplify-vue";
+
 export default {
   name: "App",
   data() {
@@ -86,6 +93,38 @@ export default {
       leftDrawer: false,
       rightDrawer: false
     };
+  },
+  computed: {
+    userrrr() {
+      return this.$store.state.user;
+    },
+    ...mapState(["user"])
+  },
+  methods: {
+    ...mapActions([SET_USER])
+  },
+  async mounted() {
+    await AmplifyEventBus.$on("authState", info => {
+      console.log(
+        `Here is the auth event that was just emitted by an Amplify component: ${info}`
+      );
+    });
+    await Auth.currentUserInfo()
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => console.log(err));
+    await Auth.currentSession()
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => console.log(err));
+    await Auth.currentCredentials()
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => console.log(err));
+    await this.$store.dispatch("setUser", "aaaaa");
   }
 };
 </script>
