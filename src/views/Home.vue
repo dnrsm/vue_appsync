@@ -75,6 +75,8 @@
             :search="search"
             :rows-per-page-text="rowsPerPageText"
             :rows-per-page-items="rowsPerPageItems"
+            :loading="loading"
+            :pagination.sync="pagination"
             select-all
             class="elevation-1"
           >
@@ -86,6 +88,7 @@
                   hide-details
                 ></v-checkbox>
               </td>
+              <td class="text-xs-right">{{ props.index }}</td>
               <td class="text-xs-right">{{ props.item.id }}</td>
               <td class="text-xs-right">{{ props.item.image }}</td>
               <td class="text-xs-right">{{ props.item.link }}</td>
@@ -129,6 +132,8 @@ export default {
   },
   data() {
     return {
+      loading: true,
+      pagination: {},
       rowsPerPageText: "表示件数",
       rowsPerPageItems: [
         { text: "$vuetify.dataIterator.rowsPerPageAll", value: -1 },
@@ -140,6 +145,7 @@ export default {
       search: "",
       selected: [],
       headers: [
+        { text: "index", value: "index" },
         { text: "id", value: "id" },
         { text: "image", value: "image" },
         { text: "link", value: "link" },
@@ -154,14 +160,7 @@ export default {
         type: ""
       },
       tasks: [],
-      editedIndex: -1,
-      editedItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0
-      }
+      editedIndex: -1
     };
   },
   computed: {
@@ -176,6 +175,15 @@ export default {
   watch: {
     dialog(val) {
       val || this.close();
+    },
+    pagination: {
+      handler() {
+        this.getDataFromApi().then(data => {
+          this.desserts = data.items;
+          this.totalDesserts = data.total;
+        });
+      },
+      deep: true
     }
   },
   methods: {
@@ -220,10 +228,52 @@ export default {
         await this.$store.dispatch("crud/getItems");
       }
     },
-    ...mapActions(["crud/getItems", "crud/updateItems", "crud/deleteItems"])
+    ...mapActions(["crud/getItems", "crud/updateItems", "crud/deleteItems"]),
+    getDataFromApi() {
+      this.loading = true;
+      return new Promise((resolve, reject) => {
+        const { sortBy, descending, page, rowsPerPage } = this.pagination;
+
+        let items = this.items;
+        const total = items.length;
+
+        if (this.pagination.sortBy) {
+          items = items.sort((a, b) => {
+            const sortA = a[sortBy];
+            const sortB = b[sortBy];
+
+            if (descending) {
+              if (sortA < sortB) return 1;
+              if (sortA > sortB) return -1;
+              return 0;
+            } else {
+              if (sortA < sortB) return -1;
+              if (sortA > sortB) return 1;
+              return 0;
+            }
+          });
+        }
+
+        if (rowsPerPage > 0) {
+          items = items.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+        }
+
+        setTimeout(() => {
+          this.loading = false;
+          resolve({
+            items,
+            total
+          });
+        }, 1000);
+      });
+    }
   },
   async mounted() {
     this.$store.dispatch("crud/getItems");
+    this.getDataFromApi().then(data => {
+      this.desserts = data.items;
+      this.totalDesserts = data.total;
+    });
   }
 };
 </script>
