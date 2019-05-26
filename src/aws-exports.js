@@ -4,6 +4,6 @@ export default {
     region: process.env.region,
     userPoolId: process.env.userPoolId,
     userPoolWebClientId: process.env.userPoolWebClientId,
-    mandatorySignIn: process.env.mandatorySignIn
+    mandatorySignIn: true
   }
 };
