@@ -1,21 +1,7 @@
 <template>
   <v-container grid-list-md>
     <v-layout justify-center row wrap>
-      <!-- <v-flex xs4 /> -->
-      <!-- <v-flex xs4 text-xs-center>
-        <h3>AppSync Tasks</h3>
-        <v-form>
-          <v-text-field v-model="data.image" label="image"></v-text-field>
-          <v-text-field v-model="data.link" label="link"></v-text-field>
-          <v-text-field v-model="data.blank" label="blank"></v-text-field>
-          <v-text-field v-model="data.type" label="type"></v-text-field>
-        </v-form>
-        <v-btn round color="primary" @click="createItems()">タスク追加</v-btn>
-      </v-flex> -->
-
       <ItemForm />
-
-      <!-- <v-flex xs4 /> -->
       <v-flex xs12 sm12>
         <v-card>
           <v-card-title>
@@ -87,6 +73,8 @@
             :headers="headers"
             :items="items"
             :search="search"
+            :rows-per-page-text="rowsPerPageText"
+            :rows-per-page-items="rowsPerPageItems"
             select-all
             class="elevation-1"
           >
@@ -104,7 +92,11 @@
               <td class="text-xs-right">{{ props.item.blank }}</td>
               <td class="text-xs-right">{{ props.item.type }}</td>
               <td class="justify-center layout px-0">
-                <v-icon small class="mr-2" @click="editItem(props.item)">
+                <v-icon
+                  small
+                  class="mr-2"
+                  @click="editItem(props.item, props.index)"
+                >
                   edit
                 </v-icon>
                 <v-icon small @click="deleteItems(props.item.id)">
@@ -125,10 +117,10 @@
 </template>
 
 <script>
-import itemService from "../services/itemService";
 import ItemForm from "../components/ItemForm.vue";
 
 import { mapState, mapActions } from "vuex";
+// import { constants } from "crypto";
 
 export default {
   name: "home",
@@ -137,6 +129,13 @@ export default {
   },
   data() {
     return {
+      rowsPerPageText: "表示件数",
+      rowsPerPageItems: [
+        { text: "$vuetify.dataIterator.rowsPerPageAll", value: -1 },
+        5,
+        10,
+        25
+      ],
       dialog: false,
       search: "",
       selected: [],
@@ -180,8 +179,8 @@ export default {
     }
   },
   methods: {
-    editItem(item) {
-      this.editedIndex = this.tasks.indexOf(item);
+    editItem(item, index) {
+      this.editedIndex = index;
       this.data = Object.assign({}, item);
       this.dialog = true;
     },
@@ -201,27 +200,29 @@ export default {
       this.close();
     },
     async createItems() {
-      await itemService.createItems(JSON.parse(JSON.stringify(this.data)));
+      await this.$store.dispatch(
+        "crud/createItems",
+        JSON.parse(JSON.stringify(this.data))
+      );
       this.data = "";
       this.dialog = false;
-      this.tasks = await itemService.getItems();
+      await this.$store.dispatch("crud/getItems");
       this.close();
     },
     async updateItems(data) {
-      await itemService.updateItems(data);
-      this.tasks = await itemService.getItems();
+      await this.$store.dispatch("crud/updateItems", data);
+      await this.$store.dispatch("crud/getItems");
     },
     async deleteItems(id) {
       let confirm_result = confirm("削除しますか？");
       if (confirm_result) {
-        await itemService.deleteItems(id);
-        this.tasks = await itemService.getItems();
+        await this.$store.dispatch("crud/deleteItems", id);
+        await this.$store.dispatch("crud/getItems");
       }
     },
-    // ...mapActions(["crud/getItems"])
+    ...mapActions(["crud/getItems", "crud/updateItems", "crud/deleteItems"])
   },
   async mounted() {
-    // this.tasks = await itemService.getItems();
     this.$store.dispatch("crud/getItems");
   }
 };

@@ -38,7 +38,7 @@ export default {
       );
       return newTask;
     },
-    async updateItems(data) {
+    async updateItems({}, data) {
       const updateItems = `
       mutation createMyModelType($updatemymodeltypeinput: UpdateMyModelTypeInput!) {
         updateMyModelType(input: $updatemymodeltypeinput) {
@@ -55,7 +55,7 @@ export default {
       );
       return updatedTask;
     },
-    async deleteItems(taskId) {
+    async deleteItems({}, taskId) {
       const deleteItems = `
       mutation deleteMyModelType($deletemymodeltypeinput: DeleteMyModelTypeInput!) {
         deleteMyModelType(input: $deletemymodeltypeinput) {
