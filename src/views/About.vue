@@ -18,7 +18,7 @@ export default {
     ...mapState(["users/user"])
   },
   mounted() {
-    console.log(this.$store.state.user);
+    // console.log(this.$store.state.user);
     console.log(this.$store.state.users.user);
   },
   methods: {

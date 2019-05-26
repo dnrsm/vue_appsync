@@ -15,6 +15,7 @@ export default {
       }
     }`;
     const tasks = await API.graphql(graphqlOperation(listTasks));
+    console.log(tasks.data.listMyModelTypes.items);
     return tasks.data.listMyModelTypes.items;
   },
   async createItems(data) {

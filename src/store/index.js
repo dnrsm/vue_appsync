@@ -6,12 +6,14 @@ import mutations from "./mutations";
 import state from "./state";
 
 import users from "./modules/users";
+import crud from "./modules/crud";
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   modules: {
-    users
+    users,
+    crud
   },
   actions,
   getters,

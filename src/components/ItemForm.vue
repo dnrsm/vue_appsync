@@ -48,9 +48,11 @@
 </template>
 
 <script>
-import itemService from "../services/itemService";
 import { validationMixin } from "vuelidate";
 import { required, maxLength } from "vuelidate/lib/validators";
+import { mapActions } from "vuex";
+
+// import itemService from "../services/itemService";
 
 export default {
   name: "FromComp",
@@ -116,13 +118,21 @@ export default {
       this.data.type = "";
     },
     async createItems() {
-      await itemService.createItems(JSON.parse(JSON.stringify(this.data)));
+      // await itemService.createItems(JSON.parse(JSON.stringify(this.data)));
+      await this.$store.dispatch(
+        "crud/createItems",
+        JSON.parse(JSON.stringify(this.data))
+      );
       await console.log("success");
       await this.clear();
       // this.dialog = false;
       // this.tasks = await itemService.getItems();
       // this.close();
-    }
+
+      await this.$store.dispatch("crud/getItems");
+      await console.log("successsssss");
+    },
+    ...mapActions(["crud/getItems", "crud/createItems"])
   }
 };
 </script>

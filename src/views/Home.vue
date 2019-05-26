@@ -13,7 +13,7 @@
         <v-btn round color="primary" @click="createItems()">タスク追加</v-btn>
       </v-flex> -->
 
-      <FormComp />
+      <ItemForm />
 
       <!-- <v-flex xs4 /> -->
       <v-flex xs12 sm12>
@@ -85,7 +85,7 @@
           <v-data-table
             v-model="selected"
             :headers="headers"
-            :items="tasks"
+            :items="items"
             :search="search"
             select-all
             class="elevation-1"
@@ -126,12 +126,14 @@
 
 <script>
 import itemService from "../services/itemService";
-import FormComp from "../components/FormComp.vue";
+import ItemForm from "../components/ItemForm.vue";
+
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "home",
   components: {
-    FormComp
+    ItemForm
   },
   data() {
     return {
@@ -166,7 +168,11 @@ export default {
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    }
+    },
+    items() {
+      return this.$store.state.crud.items;
+    },
+    ...mapState(["crud/items"])
   },
   watch: {
     dialog(val) {
@@ -211,10 +217,12 @@ export default {
         await itemService.deleteItems(id);
         this.tasks = await itemService.getItems();
       }
-    }
+    },
+    // ...mapActions(["crud/getItems"])
   },
   async mounted() {
-    this.tasks = await itemService.getItems();
+    // this.tasks = await itemService.getItems();
+    this.$store.dispatch("crud/getItems");
   }
 };
 </script>
