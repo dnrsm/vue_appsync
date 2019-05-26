@@ -1,9 +1,9 @@
 export default {
   Auth: {
-    identityPoolId: process.env.identityPoolId,
-    region: process.env.region,
-    userPoolId: process.env.userPoolId,
-    userPoolWebClientId: process.env.userPoolWebClientId,
+    identityPoolId: "IDENTITY_POOL_ID",
+    region: "REGION",
+    userPoolId: "USER_POOL_ID",
+    userPoolWebClientId: "USER_POOL_WEB_CLIENT_ID",
     mandatorySignIn: true
   }
 };
