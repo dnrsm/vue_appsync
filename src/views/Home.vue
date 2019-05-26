@@ -90,7 +90,23 @@
               </td>
               <td class="text-xs-right">{{ props.index }}</td>
               <td class="text-xs-right">{{ props.item.id }}</td>
-              <td class="text-xs-right">{{ props.item.image }}</td>
+              <v-edit-dialog
+                :return-value.sync="props.item.image"
+                lazy
+                @open="editInlineItem(props.item, props.index)"
+                @save="updateItems(data)"
+                @close="close"
+              >
+                {{ props.item.image }}
+                <template v-slot:input>
+                  <v-text-field
+                    v-model="data.image"
+                    label="Edit"
+                    single-line
+                    counter
+                  ></v-text-field>
+                </template>
+              </v-edit-dialog>
               <td class="text-xs-right">{{ props.item.link }}</td>
               <td class="text-xs-right">{{ props.item.blank }}</td>
               <td class="text-xs-right">{{ props.item.type }}</td>
@@ -192,6 +208,12 @@ export default {
       this.data = Object.assign({}, item);
       this.dialog = true;
     },
+    editInlineItem(item, index) {
+      console.log(item)
+      console.log(index)
+      this.editedIndex = index;
+      this.data = Object.assign({}, item);
+    },
     close() {
       this.dialog = false;
       setTimeout(() => {
@@ -202,8 +224,10 @@ export default {
     async save(data) {
       if (this.editedIndex > -1) {
         await this.updateItems(data);
+        console.log(data);
       } else {
         await this.createItems();
+        console.log(data);
       }
       this.close();
     },
@@ -217,8 +241,10 @@ export default {
       await this.$store.dispatch("crud/getItems");
       this.close();
     },
-    async updateItems(data) {
-      await this.$store.dispatch("crud/updateItems", data);
+    async updateItems(item) {
+      // await console.log(item)
+      // this.data = await Object.assign({}, item);
+      await this.$store.dispatch("crud/updateItems", item);
       await this.$store.dispatch("crud/getItems");
     },
     async deleteItems(id) {
@@ -270,10 +296,6 @@ export default {
   },
   async mounted() {
     this.$store.dispatch("crud/getItems");
-    this.getDataFromApi().then(data => {
-      this.desserts = data.items;
-      this.totalDesserts = data.total;
-    });
   }
 };
 </script>
