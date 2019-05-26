@@ -19,6 +19,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
-
-/src/AppSync.js
-/src/aws-exports.js
