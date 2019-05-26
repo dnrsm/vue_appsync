@@ -21,7 +21,7 @@ export default {
       const tasks = await API.graphql(graphqlOperation(listTasks));
       commit("getItemsData", tasks.data.listMyModelTypes.items);
     },
-    async createItems({}, data) {
+    async createItems(state, data) {
       const createItems = `
       mutation createMyModelType($createmymodeltypeinput: CreateMyModelTypeInput!) {
         createMyModelType(input: $createmymodeltypeinput) {
@@ -38,7 +38,7 @@ export default {
       );
       return newTask;
     },
-    async updateItems({}, data) {
+    async updateItems(state, data) {
       const updateItems = `
       mutation createMyModelType($updatemymodeltypeinput: UpdateMyModelTypeInput!) {
         updateMyModelType(input: $updatemymodeltypeinput) {
@@ -55,7 +55,7 @@ export default {
       );
       return updatedTask;
     },
-    async deleteItems({}, taskId) {
+    async deleteItems(state, taskId) {
       const deleteItems = `
       mutation deleteMyModelType($deletemymodeltypeinput: DeleteMyModelTypeInput!) {
         deleteMyModelType(input: $deletemymodeltypeinput) {
@@ -74,7 +74,6 @@ export default {
   mutations: {
     getItemsData(state, val) {
       state.items = val;
-      console.log(state.items);
     }
   },
   getters: {}

@@ -209,8 +209,6 @@ export default {
       this.dialog = true;
     },
     editInlineItem(item, index) {
-      console.log(item)
-      console.log(index)
       this.editedIndex = index;
       this.data = Object.assign({}, item);
     },
@@ -257,7 +255,7 @@ export default {
     ...mapActions(["crud/getItems", "crud/updateItems", "crud/deleteItems"]),
     getDataFromApi() {
       this.loading = true;
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         const { sortBy, descending, page, rowsPerPage } = this.pagination;
 
         let items = this.items;
