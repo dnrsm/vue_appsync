@@ -1,8 +1,14 @@
 <template>
   <v-container grid-list-md>
-    <v-layout row wrap>
+    <v-layout justify-center row wrap>
       <v-flex xs4 text-xs-center>
-        <amplify-authenticator></amplify-authenticator>
+
+        <amplify-authenticator
+          v-bind:authConfig="authConfig"
+        ></amplify-authenticator>
+        <amplify-sign-out></amplify-sign-out>
+
+
         <div class="login-form">
           <p>status: {{ status }}</p>
           <p>message_text: {{ message_text }}</p>
@@ -50,6 +56,11 @@ Amplify.configure(aws_exports);
 export default {
   data() {
     return {
+      authConfig: {
+        signUpConfig: {
+          hiddenDefaults: ["phone_number", "email"]
+        }
+      },
       status: "",
       userInfo: {
         username: "",
@@ -71,25 +82,35 @@ export default {
       });
   },
   methods: {
-    signUp: function() {
+    signUp() {
       Auth.signUp(this.userInfo.username, this.userInfo.password)
-        .then(data => console.log(data))
-        .catch(err => console.log(err));
+        .then(data => {
+          this.message_text = "登録しました";
+          console.log(data)
+          this.$router.replace('/confirm')
+        })
+        .catch(err => {
+          this.message_text = err.message;
+        });
     },
-    signIn: function() {
+    signIn() {
       Auth.signIn(this.userInfo.username, this.userInfo.password)
         .then(data => {
           this.message_text = "ログインしました";
           this.status = "こんにちは、" + data.username + "さん";
+          this.$router.replace('/')
         })
         .catch(() => {
           this.message_text = "ログインできませんでした";
         });
     },
-    signOut: function() {
+    signOut() {
       Auth.signOut()
         .then(() => {
           this.message_text = "ログアウトしました";
+          this.$router.replace('/')
+          this.userInfo.username = ""
+          this.userInfo.password = ""
         })
         .catch(() => {
           this.message_text = "ログアウトできませんでした";
