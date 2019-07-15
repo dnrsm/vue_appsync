@@ -8,8 +8,7 @@
         ></amplify-authenticator>
         <amplify-sign-out></amplify-sign-out>
 
-
-        <div class="login-form">
+        <div v-if="status !== 'login'" class="login-form">
           <p>status: {{ status }}</p>
           <p>message_text: {{ message_text }}</p>
           <v-text-field
@@ -25,12 +24,11 @@
           <v-btn v-if="status == 'logout'" color="primary" @click="signIn()"
             >ログイン</v-btn
           >
-          <v-btn v-if="status == 'login'" color="primary" @click="signOut()"
-            >ログアウト</v-btn
-          >
           <img :src="url" />
         </div>
-        <div class="login-form">
+        <v-btn v-if="status == 'login'" color="primary" @click="signOut()">ログアウト</v-btn
+        >
+        <div v-if="status !== 'login'" class="login-form">
           <v-text-field
             label="username"
             type="text"
@@ -86,8 +84,8 @@ export default {
       Auth.signUp(this.userInfo.username, this.userInfo.password)
         .then(data => {
           this.message_text = "登録しました";
-          console.log(data)
-          this.$router.replace('/confirm')
+          console.log(data);
+          this.$router.replace("/confirm");
         })
         .catch(err => {
           this.message_text = err.message;
@@ -98,7 +96,7 @@ export default {
         .then(data => {
           this.message_text = "ログインしました";
           this.status = "こんにちは、" + data.username + "さん";
-          this.$router.replace('/')
+          this.$router.replace("/");
         })
         .catch(() => {
           this.message_text = "ログインできませんでした";
@@ -108,9 +106,10 @@ export default {
       Auth.signOut()
         .then(() => {
           this.message_text = "ログアウトしました";
-          this.$router.replace('/')
-          this.userInfo.username = ""
-          this.userInfo.password = ""
+          this.$router.replace("/");
+          this.userInfo.username = "";
+          this.userInfo.password = "";
+          this.status = "logout";
         })
         .catch(() => {
           this.message_text = "ログアウトできませんでした";

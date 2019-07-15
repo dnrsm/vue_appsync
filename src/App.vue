@@ -46,7 +46,7 @@
       </v-btn>
       <v-toolbar-title>The Dashboard</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-title>{{ user ? user : "未ログイン" }}</v-toolbar-title>
+      <v-toolbar-title>{{ email ? email : "未ログイン" }}</v-toolbar-title>
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>account_circle</v-icon>
       </v-btn>
@@ -76,10 +76,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-
-// import { Auth } from "aws-amplify";
-// import { AmplifyEventBus } from "aws-amplify-vue";
+// import { mapState } from "vuex";
 
 export default {
   name: "App",
@@ -94,34 +91,13 @@ export default {
     user() {
       return this.$store.state.users.user;
     },
-    ...mapState(["users/user"])
+    email() {
+      return this.$store.state.users.email;
+    }
+    // ...mapState(["users/user", "users/email"])
   },
   async mounted() {
     this.$store.dispatch("users/getUserInfoAction");
-
-    // await AmplifyEventBus.$on("authState", info => {
-    //   console.log(
-    //     `Here is the auth event that was just emitted by an Amplify component: ${info}`
-    //   );
-    // });
-    // await Auth.currentUserInfo()
-    //   .then(data => {
-    //     console.log("currentUserInfo");
-    //     console.log(data);
-    //   })
-    //   .catch(err => console.log(err));
-    // await Auth.currentSession()
-    //   .then(data => {
-    //     console.log("currentSession");
-    //     console.log(data);
-    //   })
-    //   .catch(err => console.log(err));
-    // await Auth.currentCredentials()
-    //   .then(data => {
-    //     console.log("currentCredentials");
-    //     console.log(data);
-    //   })
-    //   .catch(err => console.log(err));
   }
 };
 </script>

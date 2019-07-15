@@ -36,16 +36,16 @@ export default {
     };
   },
   methods: {
-    confirm () {
+    confirm() {
       Auth.confirmSignUp(this.userInfo.username, this.userInfo.password)
         .then(data => {
           this.message_text = "確認しました";
-          console.log(data)
-          this.$router.replace('/')
+          console.log(data);
+          this.$router.replace("/");
         })
         .catch(err => {
           this.message_text = err.message;
-          console.log(data)
+          console.log(data);
         });
     }
   }

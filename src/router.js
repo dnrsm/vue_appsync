@@ -67,6 +67,12 @@ const router = new Router({
       name: "login",
       component: () =>
         import(/* webpackChunkName: "about" */ "./views/Login.vue")
+    },
+    {
+      path: "/confirm",
+      name: "login",
+      component: () =>
+        import(/* webpackChunkName: "about" */ "./views/Confirm.vue")
     }
   ]
 });
